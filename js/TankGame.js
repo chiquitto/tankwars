@@ -8,11 +8,10 @@ class TankGame {
 
     this.w = this.stage.canvas.width;
     this.h = this.stage.canvas.height;
-    
-    this.minPosX = 30;
-    this.minPosY = 30;
-    this.maxPosX = this.w - 32 - this.minPosX;
-    this.maxPosY = this.h - 32 - this.minPosY;
+    this.tankW = 32;
+    this.tankH = 32;
+
+    this.calculateRingDimensions();
 
     this.loadQueue = null;
     this.screen = null;
@@ -37,12 +36,41 @@ class TankGame {
 
   }
 
-  generatePositions() {
-    this.player1.posx = this.mt_rand(this.minPosX, this.maxPosX);
-    this.player1.posy = this.mt_rand(this.minPosY, this.maxPosY);
+  calculateRingDimensions() {
+    this.ringLeftMargin = 10;
+    this.ringTopMargin = 10;
+    this.ringRightMargin = 10;
+    this.ringBottomMargin = 10;
 
-    this.player2.posx = this.mt_rand(this.minPosX, this.maxPosX);
-    this.player2.posy = this.mt_rand(this.minPosY, this.maxPosY);
+    this.ringW = (this.w - this.ringLeftMargin - this.ringRightMargin);
+    this.ringW = this.ringW - (this.ringW % this.tankW);
+
+    this.ringH = (this.h - this.ringTopMargin - this.ringBottomMargin);
+    this.ringH = this.ringH - (this.ringH % this.tankH);
+
+    this.ringLeftPos = (this.w - this.ringW) / 2;
+    this.ringTopPos = this.h - this.ringH - this.ringBottomMargin;
+
+    this.tankMinPosX = this.ringLeftPos + 10;
+    this.tankMinPosY = this.ringTopPos + 10;
+    this.tankMaxPosX = this.ringLeftPos + this.ringW - this.tankW - 10;
+    this.tankMaxPosY = this.ringTopPos + this.ringH - this.tankH - 10;
+  }
+
+  generatePositions() {
+    this.player1.posx = this.mt_rand(this.tankMinPosX, this.tankMaxPosX);
+    this.player1.posy = this.mt_rand(this.tankMinPosY, this.tankMaxPosY);
+    this.player1.rotate = this.mt_rand(0, 359);
+
+    do {
+      this.player2.posx = this.mt_rand(this.tankMinPosX, this.tankMaxPosX);
+    } while (Math.abs(this.player2.posx - this.player1.posx) < (this.tankW * 2));
+
+    do {
+      this.player2.posy = this.mt_rand(this.tankMinPosY, this.tankMaxPosY);
+    } while (Math.abs(this.player2.posy - this.player1.posy) < (this.tankH * 2));
+    
+    this.player2.rotate = this.mt_rand(0, 359);
   }
 
   initVars(data) {

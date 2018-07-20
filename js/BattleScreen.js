@@ -10,47 +10,41 @@ class BattleScreen {
   }
 
   init() {
+    this.drawStage();
+
     this.drawTank(this.player1);
     this.drawTank(this.player2);
+
+    this.stage.update();
+  }
+
+  drawStage() {
+    var rect = new createjs.Shape();
+    rect.graphics.beginFill('#FFFFFF');
+    rect.graphics.drawRect(
+      this.tankGame.ringLeftPos,
+      this.tankGame.ringTopPos, 
+      this.tankGame.ringW,
+      this.tankGame.ringH
+    );
+    rect.graphics.endFill();
+
+    this.stage.addChild(rect);
   }
 
   drawTank(player) {
 
+    let square = 32;
+
     let tank = new createjs.Bitmap(this.tankGame.loadQueue.getResult(player.id));
-    // tank.setTransform(player.posx, player.posy, 1, 1, 0, 0, 0, 32, 32);
-    tank.sourceRect = new createjs.Rectangle(0,0,32,32);
-    tank.x = player.posx;
-    tank.y = player.posy;
+    tank.sourceRect = new createjs.Rectangle(0, 0, square, square);
+    tank.regX = tank.regY = (square / 2);
+
+    tank.x = player.posx + tank.regX;
+    tank.y = player.posy + tank.regY;
+    tank.rotation = player.rotate;
 
     this.stage.addChild(tank);
-    this.stage.update();
-
-    return;
-
-    var spriteSheet = new createjs.SpriteSheet({
-			framerate: 30,
-			"images": [this.tankGame.loadQueue.getResult(player.id)],
-      "frames": [
-        [0, 0, 32, 32],
-        [0, 33, 32, 32],
-        [0, 65, 32, 32],
-        [0, 97, 32, 32],
-      ],
-			"animations": {
-        "top": 0,
-        "bottom": 1,
-        "left": 2,
-        "right": 3,
-			}
-		});
-    let grant = new createjs.Sprite(spriteSheet, "right");
-
-    grant.x = player.posx;
-    grant.y = player.posy;
-    
-    this.stage.addChild(grant);
-    this.stage.update();
-
   }
 
 }
