@@ -1,0 +1,7 @@
+class Tank {
+    
+  constructor(canvas) {
+
+  }
+
+}
