@@ -19,6 +19,10 @@ class TankGame {
     this.stepCounter = 0;
     this.players = [];
 
+    createjs.Ticker.addEventListener("tick", (event) => {
+      this.stage.update();
+    });
+
   }
 
   init() {
@@ -136,7 +140,7 @@ class TankGame {
         this.step(resolve, player);
 
         this.stepCounter++;
-      }, 1000);
+      }, 3000);
 
     })
     .then((resolvedValue) => {
@@ -154,7 +158,7 @@ class TankGame {
     console.log(step);
     
     player.tank.addRotation(step.rotation);
-    this.stage.update();
+    // this.stage.update();
   }
 
 }
