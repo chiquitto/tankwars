@@ -15,8 +15,9 @@ class TankGame {
 
     this.loadQueue = null;
     this.screen = null;
-    this.player1 = null;
-    this.player2 = null;
+
+    this.stepCounter = 0;
+    this.players = [];
 
   }
 
@@ -31,6 +32,9 @@ class TankGame {
     } )
     .then( (data) => {
       return this.steps(data);
+    })
+    .then( (data) => {
+      console.log(data);
     })
     ;
 
@@ -58,29 +62,22 @@ class TankGame {
   }
 
   generatePositions() {
-    this.player1.posx = this.mt_rand(this.tankMinPosX, this.tankMaxPosX);
-    this.player1.posy = this.mt_rand(this.tankMinPosY, this.tankMaxPosY);
-    this.player1.rotate = this.mt_rand(0, 359);
 
-    do {
-      this.player2.posx = this.mt_rand(this.tankMinPosX, this.tankMaxPosX);
-    } while (Math.abs(this.player2.posx - this.player1.posx) < (this.tankW * 2));
+    for(let i in this.players) {
+      this.players[i].posx = this.mt_rand(this.tankMinPosX, this.tankMaxPosX);
+      this.players[i].posy = this.mt_rand(this.tankMinPosY, this.tankMaxPosY);
+      this.players[i].rotate = this.mt_rand(0, 359);
+    }
 
-    do {
-      this.player2.posy = this.mt_rand(this.tankMinPosY, this.tankMaxPosY);
-    } while (Math.abs(this.player2.posy - this.player1.posy) < (this.tankH * 2));
-    
-    this.player2.rotate = this.mt_rand(0, 359);
   }
 
   initVars(data) {
-    this.player1 = new Player1();
-    this.player2 = new Player2();
+    this.players.push(new Player1(new Script1()));
+    this.players.push(new Player2(new Script2()));
 
     this.generatePositions();
 
-    this.screen = new BattleScreen(this, this.player1, this.player2);
-
+    this.screen = new BattleScreen(this, this.players);
     this.screen.init();
 
     return data;
@@ -129,7 +126,35 @@ class TankGame {
   }
 
   steps(data) {
-    return data;
+    let promiseResolve, interval;
+
+    let promise = new Promise((resolve, reject) => {
+
+      interval = setInterval(() => {
+        let player = this.players[ this.stepCounter % this.players.length ];
+
+        this.step(resolve, player);
+
+        this.stepCounter++;
+      }, 1000);
+
+    })
+    .then((resolvedValue) => {
+      clearInterval(interval);
+
+      return data;
+    })
+    ;
+
+    return promise;
+  }
+
+  step(resolve, player) {
+    let step = player.script.step();
+    console.log(step);
+    
+    player.tank.addRotation(step.rotation);
+    this.stage.update();
   }
 
 }

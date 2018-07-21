@@ -1,19 +1,19 @@
 // Responsavel por desenhar os itens na tela
 class BattleScreen {
   
-  constructor(tankGame, player1, player2) {
+  constructor(tankGame, players) {
     this.tankGame = tankGame;
     this.stage = this.tankGame.stage;
 
-    this.player1 = player1;
-    this.player2 = player2;
+    this.players = players;
   }
 
   init() {
     this.drawStage();
 
-    this.drawTank(this.player1);
-    this.drawTank(this.player2);
+    for(let i in this.players) {
+      this.drawTank(this.players[i]);
+    }
 
     this.stage.update();
   }
@@ -34,17 +34,9 @@ class BattleScreen {
 
   drawTank(player) {
 
-    let square = 32;
+    player.tank = new Tank(player, this.tankGame.loadQueue.getResult(player.id));
+    this.stage.addChild(player.tank);
 
-    let tank = new createjs.Bitmap(this.tankGame.loadQueue.getResult(player.id));
-    tank.sourceRect = new createjs.Rectangle(0, 0, square, square);
-    tank.regX = tank.regY = (square / 2);
-
-    tank.x = player.posx + tank.regX;
-    tank.y = player.posy + tank.regY;
-    tank.rotation = player.rotate;
-
-    this.stage.addChild(tank);
   }
 
 }
