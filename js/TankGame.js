@@ -19,9 +19,10 @@ class TankGame {
     this.stepCounter = 0;
     this.players = [];
 
-    createjs.Ticker.addEventListener("tick", (event) => {
-      this.stage.update();
-    });
+    createjs.Ticker.addEventListener("tick", this.stage);
+    // createjs.Ticker.addEventListener("tick", (event) => {
+    //   this.stage.update();
+    // });
 
   }
 
@@ -130,35 +131,36 @@ class TankGame {
   }
 
   steps(data) {
-    let promiseResolve, interval;
+    return new Promise((resolve, reject) => {
 
-    let promise = new Promise((resolve, reject) => {
+      this.step()
+      .catch((error) => {
+        
+      })
+      ;
 
-      interval = setInterval(() => {
-        let player = this.players[ this.stepCounter % this.players.length ];
-
-        this.step(resolve, player);
-
-        this.stepCounter++;
-      }, 3000);
-
-    })
-    .then((resolvedValue) => {
-      clearInterval(interval);
-
-      return data;
-    })
-    ;
-
-    return promise;
+    });
   }
 
-  step(resolve, player) {
+  step() {
+    let player = this.players[ this.stepCounter % this.players.length ];
+
     let step = player.script.step();
-    console.log(step);
     
-    player.tank.addRotation(step.rotation);
-    // this.stage.update();
+    return player.tank.addRotation(step.rotation)
+    .then((data) => {
+      this.stepCounter++;
+
+      if (this.stepCounter == 5) {
+        return Promise.reject(1);
+      }
+    })
+    .then(() => {
+      setTimeout( () => {
+        this.step();
+      }, 0 );
+    })
+    ;
   }
 
 }

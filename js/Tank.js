@@ -16,8 +16,14 @@ class Tank extends createjs.Bitmap {
     rotation += this.rotation;
     rotation %= 360;
 
-    // createjs.Ticker.setFPS(60);
-    createjs.Tween.get(this).to({rotation:rotation}, 1000);
+    return new Promise( (resolve, reject) => {
+      // createjs.Ticker.setFPS(60);
+      createjs.Tween.get(this)
+      .to({rotation:rotation}, 1000)
+      .call(resolve)
+      ;
+    } );
+
   }
 
 }
